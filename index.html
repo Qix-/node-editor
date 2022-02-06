@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Node Editor Test Harness</title>
+	</head>
+	<style type="text/css">
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-size: 1rem;
+			font-family: sans-serif;
+		}
+
+		#root {
+			width: 100%;
+			height: 100%;
+			display: grid;
+			grid-template-rows: 1fr;
+			grid-template-columns: 1fr minmax(20rem, 30vw);
+		}
+
+		#nodes-root {
+			width: 100%;
+			height: 100%;
+			background: #eee;
+			box-shadow: 11px -1px 13px -7px rgba(0, 0, 0, 0.2);
+			-webkit-box-shadow: 11px -1px 13px -7px rgba(0, 0, 0, 0.2);
+			-moz-box-shadow: 11px -1px 13px -7px rgba(0, 0, 0, 0.2);
+			z-index: 10;
+		}
+
+		#event-output {
+			width: 100%;
+			height: 100%;
+			background: #fff;
+			box-sizing: border-box;
+			overflow-y: scroll;
+			padding-bottom: 1rem;
+		}
+
+		#event-output > div {
+			box-sizing: border-box;
+			padding: 0 1rem;
+			width: 100%;
+		}
+
+		#event-output > div:nth-child(1) {
+			padding-top: 1rem;
+		}
+
+		#event-output ul {
+			padding: 0 1rem;
+		}
+
+		#event-output li {
+			margin: 1rem 0;
+		}
+
+		node-title {
+			text-transform: uppercase;
+			font-size: 0.75rem;
+			box-sizing: border-box;
+			margin-bottom: 0.5rem;
+			background-color: #111;
+			padding: 0.5rem 0.75rem;
+			border-radius: 0.25rem 0.25rem 0 0;
+			user-select: none;
+		}
+
+		node-title.dragging {
+			cursor: move;
+		}
+
+		node-map {
+			color: white;
+		}
+
+		node-map::part(background) {
+			cursor: grab;
+		}
+
+		node-map::part(link) {
+			cursor: pointer;
+		}
+
+		node-map.panning::part(background) {
+			cursor: grabbing;
+		}
+
+		node-editor::part(frame) {
+			background-color: #444;
+			border-radius: 6px;
+			box-shadow: 0px 0px 7px 2px rgba(0, 0, 0, 0.58);
+			-webkit-box-shadow: 0px 0px 7px 2px rgba(0, 0, 0, 0.58);
+			-moz-box-shadow: 0px 0px 7px 2px rgba(0, 0, 0, 0.58);
+		}
+
+		node-editor > .content {
+			padding: 0.5rem 0.75rem;
+			box-sizing: border-box;
+		}
+
+		node-editor > *,
+		node-editor > .content > * {
+			display: block;
+			width: 100%;
+		}
+
+		node-editor > .content > * {
+			margin: 0.175rem 0;
+		}
+
+		node-editor input {
+			box-sizing: border-box;
+			width: 100%;
+			border: 1px solid #111;
+			border-radius: 0.25rem;
+			padding: 0.25rem;
+		}
+
+		node-port[out] {
+			text-align: right;
+		}
+
+		node-port[connections]:not([out]) {
+			height: 1.5rem;
+		}
+
+		node-port[connections]:not([out]) > *:not([slot='handle']) {
+			visibility: hidden;
+		}
+
+		.label {
+			user-select: none;
+		}
+
+		node-port[connections].show-always > * {
+			visibility: visible !important;
+		}
+	</style>
+	<body>
+		<div id="root">
+			<div id="nodes-root">
+				<node-map>
+					<node-editor name="value0" x="138" y="312" width="200">
+						<node-title>
+							<strong>Value</strong>
+						</node-title>
+						<div class="content">
+							<node-port out name="value" color="red">
+								<input type="number" value="23" />
+							</node-port>
+						</div>
+					</node-editor>
+
+					<node-editor name="math0" x="438" y="312" width="200">
+						<node-title>
+							<strong>Add</strong>
+						</node-title>
+						<div class="content">
+							<node-port out name="value" color="red">
+								<span class="label">Result</span>
+							</node-port>
+							<node-port name="x" color="red">
+								<input type="number" placeholder="X" />
+							</node-port>
+							<node-port name="y" color="red">
+								<input type="number" placeholder="Y" />
+							</node-port>
+						</div>
+					</node-editor>
+
+					<node-editor name="display0" x="740" y="312" width="200">
+						<node-title>
+							<strong>Display</strong>
+						</node-title>
+						<div class="content">
+							<node-port
+								name="value"
+								color="#f93"
+								class="show-always"
+							>
+								<span slot="handle">🎉</span>
+								<span class="label">0</span>
+							</node-port>
+						</div>
+					</node-editor>
+
+					<node-link from="value0" out="value" to="math0" in="x">
+					</node-link>
+
+					<node-link
+						from="math0"
+						out="value"
+						to="display0"
+						in="value"
+					></node-link>
+				</node-map>
+			</div>
+			<div id="event-output">
+				<div>
+					<h1>Node Editor Demo</h1>
+					<p>
+						The node editor's events will output here. Note that
+						elements that exist upon load might not fire events.
+						More information can be found on
+						<a href="https://github.com/qix-/node-editor"
+							>qix-/node-editor</a
+						>. Note that the port <strong>position</strong> event is
+						not shown here due to it being verbose and largely
+						overlapping the editors'
+						<strong>transform</strong> events (which
+						<em>are</em> shown here; consecutive transform events
+						are consolidated).
+					</p>
+				</div>
+				<div id="ticker"><ul></ul></div>
+			</div>
+		</div>
+		<script type="module">
+			import './dist/index.js';
+
+			const MAX_EVENTS = 100;
+
+			const rnd = v => v.toFixed(2);
+
+			const ticker = document.querySelector('#event-output #ticker')
+				.children[0];
+			const nodeMap = document.querySelector('node-map');
+
+			const eventTypes = {
+				added: e => `name=<strong>${e.editor.name}</strong>`,
+				removed: e => `name=<strong>${e.editor.name}</strong>`,
+				transform: {
+					collapse: true,
+					fmt: e =>
+						`name=<strong>${e.target.name}</strong> x=<strong>${rnd(
+							e.x
+						)}</strong> y=<strong>${rnd(
+							e.y
+						)}</strong> width=<strong>${rnd(
+							e.width
+						)}</strong> height=<strong>${rnd(
+							e.height
+						)}</strong> didResize=<strong>${
+							e.didResize
+						}</strong> didMove=<strong>${e.didMove}</strong>`
+				},
+				color: e =>
+					`name=<strong>${e.target.name}</strong> editor=<strong>${e.target.nodeEditor.name}</strong> color=<strong style="color:${e.color}">${e.color}</strong>`,
+				online: e =>
+					`name=<strong>${e.port.name}</strong> editor=<strong>${e.port.nodeEditor.name}</strong>`,
+				offline: e =>
+					`name=<strong>${e.port.name}</strong> editor=<strong>${e.port.nodeEditor.name}</strong>`,
+				connected: e =>
+					`from=<strong>${e.link.fromName}</strong> out=<strong>${e.link.outName}</strong> to=<strong>${e.link.toName}</strong> in=<strong>${e.link.inName}</strong>`,
+				disconnected: e =>
+					`from=<strong>${e.link.fromName}</strong> out=<strong>${e.link.outName}</strong> to=<strong>${e.link.toName}</strong> in=<strong>${e.link.inName}</strong>`,
+				name: e =>
+					`name=<strong>${e.name}</strong> oldName=<strong>${e.oldName}</strong>`
+			};
+
+			let lastType = null;
+			let lastElem = null;
+			for (let [type, formatter] of Object.entries(eventTypes)) {
+				let multi = false;
+				let condition = null;
+				if (typeof formatter === 'object') {
+					multi = formatter.collapse;
+					condition = formatter.when;
+					formatter = formatter.fmt;
+				}
+
+				nodeMap.addEventListener(type, e => {
+					console.debug(type, e);
+
+					if (condition && !condition(e)) {
+						return;
+					}
+
+					const msg = `<strong>[${type}]</strong> ${formatter(e)}`;
+					if (multi && lastType === type) {
+						lastElem.innerHTML = msg;
+					} else {
+						const element = document.createElement('li');
+						element.innerHTML = msg;
+						ticker.prepend(element);
+						lastElem = element;
+						lastType = type;
+
+						while (ticker.children.length > MAX_EVENTS) {
+							ticker.children[
+								ticker.children.length - 1
+							].remove();
+						}
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

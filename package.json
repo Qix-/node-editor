@@ -1,0 +1,67 @@
+{
+	"name": "node-editor",
+	"version": "0.0.0",
+	"description": "Generic node editor web components",
+	"main": "index.js",
+	"homepage": "https://github.com/qix-/node-editor",
+	"repository": "github:qix-/node-editor",
+	"type": "module",
+	"types": "dist/index.d.ts",
+	"bugs": {
+		"url": "https://github.com/qix-/node-editor/issues"
+	},
+	"scripts": {
+		"format": "prettier --write --ignore-path .gitignore .",
+		"lint": "prettier --check --ignore-path .gitignore .",
+		"format:staged": "pretty-quick --staged",
+		"lint:commit": "commitlint -x @commitlint/config-conventional --edit",
+		"build": "tsc",
+		"prepublish": "npm run build"
+	},
+	"files": [
+		"dist",
+		"screenshot.png",
+		"README.md",
+		"LICENSE"
+	],
+	"browser": "dist/index.js",
+	"exports": "dist/index.js",
+	"keywords": [
+		"node",
+		"editor",
+		"html",
+		"browser",
+		"workflow",
+		"routing",
+		"router"
+	],
+	"author": "Josh Junon <josh@junon.me>",
+	"license": "MIT",
+	"devDependencies": {
+		"@commitlint/cli": "16.1.0",
+		"@commitlint/config-conventional": "16.0.0",
+		"@vercel/git-hooks": "1.0.0",
+		"prettier": "2.5.1",
+		"pretty-quick": "3.1.3",
+		"typescript": "4.5.5"
+	},
+	"publishConfig": {
+		"access": "public",
+		"tag": "latest"
+	},
+	"git": {
+		"pre-commit": "format:staged",
+		"commit-msg": "lint:commit"
+	},
+	"prettier": {
+		"useTabs": true,
+		"semi": true,
+		"singleQuote": true,
+		"jsxSingleQuote": false,
+		"trailingComma": "none",
+		"arrowParens": "avoid",
+		"requirePragma": false,
+		"insertPragma": false,
+		"endOfLine": "lf"
+	}
+}
