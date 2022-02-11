@@ -1,7 +1,7 @@
 # Node Editor (Web Components)
 
 <center>
-<img alt="Screenshot of the node editor component demo" src="screenshot.png" />
+<img alt="Screenshot of the node editor component demo" src="https://github.com/Qix-/node-editor/raw/master/screenshot.png" />
 </center>
 <br />
 
