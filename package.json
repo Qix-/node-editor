@@ -16,7 +16,7 @@
 		"format:staged": "pretty-quick --staged",
 		"lint:commit": "commitlint -x @commitlint/config-conventional --edit",
 		"build": "tsc",
-		"prepublish": "npm run build"
+		"prepublish": "rm -rf dist && npm run build"
 	},
 	"files": [
 		"dist",
