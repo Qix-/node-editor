@@ -148,23 +148,23 @@ events will stop bubbling once they hit their respective `<node-map>` element.
 -   `offline` (`NodePortOfflineEvent`) - a port was deleted from an editor
     -   `event.target` - the `<node-editor>` (`NodeEditorElement`) element that held the port
     -   `event.port` - the `<node-port>` (`NodePortElement`) that was deleted
--   `added` (`NodeEditorAddedEvent`) - an editor was added to the map
+-   `add` (`NodeEditorAddEvent`) - an editor was added to the map
     -   `event.target` - the `<node-editor>` (`NodeEditorElement`) element that was added
     -   `event.editor` - same as `event.target`
--   `removed` (`NodeEditorRemovedEvent`) - an editor was removed from the map
+-   `remove` (`NodeEditorRemoveEvent`) - an editor was removed from the map
     -   `event.target` - the `<node-map>` (`NodeMapElement`) element from which the editor was removed
     -   `event.editor` - the removed `<node-editor>` (`NodeEditorElement`) element
 -   `link` (`NodeLinkEvent`) - a `<node-link>` was added to the map
-    (**note:** does NOT mean a connection was made - see the `connected` event)
+    (**note:** does NOT mean a connection was made - see the `connect` event)
     -   `event.target` - the `<node-link>` (`NodeLinkElement`) element
     -   `event.link` - same as `event.target`
 -   `unlink` (`NodeUnlinkEvent`) - a `<node-link>` was removed from the map
     -   `event.target` - the `<node-map>` (`NodeMapElement`) element from which the link was removed
     -   `event.link` - the `<node-link>` (`NodeLinkElement`) that was removed
--   `connected` (`NodeConnectedEvent`) - a `<node-link>` successfully formed a connection between two ports
+-   `connect` (`NodeConnectEvent`) - a `<node-link>` successfully formed a connection between two ports
     -   `event.target` - the `<node-link>` (`NodeLinkElement`) element
     -   `event.link` - same as `event.target`
--   `disconnected` (`NodeDisconnectedEvent`) - a `<node-link>` lost its connection
+-   `disconnect` (`NodeDisconnectEvent`) - a `<node-link>` lost its connection
     -   `event.target` - the `<node-map>` (`NodeMapElement`) element from which the link was removed
     -   `event.link` - the `<node-link>` (`NodeLinkElement`) that was removed
 -   `name` (`NodeNameEvent`) - a `<node-editor>` or `<node-port>` changed its `name` attribute
@@ -207,13 +207,13 @@ notes or exceptions are added as sub-points.
 -   `color`
 -   `online`
 -   `offline`
--   `added`
--   `removed`
+-   `add`
+-   `remove`
     -   `event.target` is the `<node-element>` (`NodeEditorElement`) that was removed
     -   `event.editor.nodeMap` is still valid during the callback, and refers to the
         `<node-map>` (`NodeMapElement`) from which the editor was removed.
--   `connected`
--   `disconnected`
+-   `connect`
+-   `disconnect`
 -   `name`
 
 #### Properties
@@ -297,13 +297,13 @@ notes or exceptions are added as sub-points.
     -   `event.target` is the `<node-port>` (`NodePortElement`) that was removed
     -   `event.target.nodeEditor` is still valid during the callback, and refers to the
         `<node-editor>` (`NodeEditorElement`) from which the port was removed.
--   `connected`
+-   `connect`
     -   Does not bubble; a separate event is dispatched from the `<node-link>` itself.
--   `disconnected`
+-   `disconnect`
     -   Does not bubble; a separate event is dispatched from the `<node-link>` itself.
 -   `name`
 
-> **NOTE:** The way that the `connected` and `disconnected` events are dispatched
+> **NOTE:** The way that the `connect` and `disconnect` events are dispatched
 > may change prior to the v1 release.
 
 #### Properties
@@ -418,7 +418,7 @@ a link to show up in the editor.
 
 In the event a link is disconnected and a port/editor is either created or has its
 `name` changed thus that the four required attributes become collectively 'valid',
-then the link enters the connected state whereby the `connected` event is dispatched
+then the link enters the connected state whereby the `connect` event is dispatched
 and a visual line is formed between the two referenced ports. This also activates
 the `fromPort` and `toPort` properties, which hold live references to the connected
 `<node-port>` (`NodePortElement`) elements.
@@ -442,8 +442,8 @@ notes or exceptions are added as sub-points.
 
 -   `link`
 -   `unlink`
--   `connected`
--   `disconnected`
+-   `connect`
+-   `disconnect`
     -   `event.target` - the `<node-link>` that was removed
     -   `event.target.nodeMap` is still valid during this callback
 
@@ -480,7 +480,7 @@ created if all four refer to valid editor/port names.
 Some questions that aren't so much "frequently" asked, but might
 come up as you're using the library.
 
-### Why separate `link`/`unlink` and `connected`/`disconnected` events?
+### Why separate `link`/`unlink` and `connect`/`disconnect` events?
 
 One of the "unopinionated" design aspects of the library is that it doesn't
 immediately remove any `<node-link>` elements that might have existed
@@ -491,9 +491,9 @@ refers to non-existant editors/ports, which immediately fires off a `link`
 event.
 
 It's not until the editors/ports referred to by the `<node-link>` element
-come into existence that the `connected` event is fired.
+come into existence that the `connect` event is fired.
 
-**In most cases, you will only care about the `connected` and `disconnected`
+**In most cases, you will only care about the `connect` and `disconnect`
 events.**
 
 This may change prior to the v1 release - the usefulness of this approach

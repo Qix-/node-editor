@@ -268,20 +268,20 @@ class NodePortOfflineEvent extends Event {
 	}
 }
 
-class NodeEditorAddedEvent extends Event {
+class NodeEditorAddEvent extends Event {
 	editor: NodeEditorElement;
 
 	constructor(editor: NodeEditorElement) {
-		super('added', { bubbles: true });
+		super('add', { bubbles: true });
 		this.editor = editor;
 	}
 }
 
-class NodeEditorRemovedEvent extends Event {
+class NodeEditorRemoveEvent extends Event {
 	editor: NodeEditorElement;
 
 	constructor(editor: NodeEditorElement) {
-		super('removed', { bubbles: true });
+		super('remove', { bubbles: true });
 		this.editor = editor;
 	}
 }
@@ -315,20 +315,20 @@ class NodeUnlinkEvent extends Event {
 	}
 }
 
-class NodeConnectedEvent extends Event {
+class NodeConnectEvent extends Event {
 	link: NodeLinkElement;
 
 	constructor(link: NodeLinkElement, bubbles: boolean) {
-		super('connected', { bubbles });
+		super('connect', { bubbles });
 		this.link = link;
 	}
 }
 
-class NodeDisconnectedEvent extends Event {
+class NodeDisconnectEvent extends Event {
 	link: NodeLinkElement;
 
 	constructor(link: NodeLinkElement, bubbles: boolean) {
-		super('disconnected', { bubbles });
+		super('disconnect', { bubbles });
 		this.link = link;
 	}
 }
@@ -410,12 +410,12 @@ class NodePortElement extends HTMLElement {
 		this[refreshPosition]();
 		this[refreshColor]();
 
-		this.addEventListener('connected', e => {
-			I.connections.add((<NodeConnectedEvent>e).link);
+		this.addEventListener('connect', e => {
+			I.connections.add((<NodeConnectEvent>e).link);
 			this.setAttribute('connections', I.connections.size.toString());
 		});
-		this.addEventListener('disconnected', e => {
-			I.connections.delete((<NodeDisconnectedEvent>e).link);
+		this.addEventListener('disconnect', e => {
+			I.connections.delete((<NodeDisconnectEvent>e).link);
 			const count = I.connections.size;
 			if (count > 0) {
 				this.setAttribute('connections', count.toString());
@@ -746,7 +746,7 @@ class NodeEditorElement extends HTMLElement {
 
 		I.map = findAncestorOfType(this, NodeMapElement);
 
-		this.dispatchEvent(new NodeEditorAddedEvent(this));
+		this.dispatchEvent(new NodeEditorAddEvent(this));
 
 		upgradeAll(this, 'node-port', NodePortElement);
 		upgradeAll(this, 'node-title', NodeTitleElement);
@@ -757,7 +757,7 @@ class NodeEditorElement extends HTMLElement {
 	disconnectedCallback() {
 		const I = this[internal];
 
-		const ev = new NodeEditorRemovedEvent(this);
+		const ev = new NodeEditorRemoveEvent(this);
 		this.dispatchEvent(ev);
 		if (ev.bubbles && !ev.cancelBubble) I.map?.dispatchEvent(ev);
 
@@ -992,23 +992,23 @@ class NodeLinkElement extends HTMLElement {
 		if (I.connected === connected) return;
 
 		if (connected) {
-			this.dispatchEvent(new NodeConnectedEvent(this, true));
+			this.dispatchEvent(new NodeConnectEvent(this, true));
 			(<NodePortElement>fromPort).dispatchEvent(
-				new NodeConnectedEvent(this, false)
+				new NodeConnectEvent(this, false)
 			);
 			(<NodePortElement>toPort).dispatchEvent(
-				new NodeConnectedEvent(this, false)
+				new NodeConnectEvent(this, false)
 			);
 		} else {
-			const ev = new NodeDisconnectedEvent(this, true);
+			const ev = new NodeDisconnectEvent(this, true);
 			this.dispatchEvent(ev);
 			if (!ev.cancelBubble) {
 				I.map?.dispatchEvent(ev);
 			}
 			if (fromPort)
-				fromPort.dispatchEvent(new NodeDisconnectedEvent(this, false));
+				fromPort.dispatchEvent(new NodeDisconnectEvent(this, false));
 			if (toPort)
-				toPort.dispatchEvent(new NodeDisconnectedEvent(this, false));
+				toPort.dispatchEvent(new NodeDisconnectEvent(this, false));
 		}
 
 		I.connected = connected;
@@ -1553,10 +1553,10 @@ class NodeMapElement extends HTMLElement {
 		createBoundary('position');
 		createBoundary('color');
 
-		this.addEventListener('connected', e => {
+		this.addEventListener('connect', e => {
 			e.stopPropagation();
 
-			const link = (<NodeConnectedEvent>e).link;
+			const link = (<NodeConnectEvent>e).link;
 			const set = I.connections.get(link.outPort);
 			if (set) {
 				set.add(link.inPort);
@@ -1565,10 +1565,10 @@ class NodeMapElement extends HTMLElement {
 			}
 		});
 
-		this.addEventListener('disconnected', e => {
+		this.addEventListener('disconnect', e => {
 			e.stopPropagation();
 
-			const link = (<NodeConnectedEvent>e).link;
+			const link = (<NodeConnectEvent>e).link;
 			const set = I.connections.get(link.outPort);
 			if (set) {
 				set.delete(link.inPort);
@@ -1590,10 +1590,10 @@ class NodeMapElement extends HTMLElement {
 			removePort(port);
 		});
 
-		this.addEventListener('added', e => {
+		this.addEventListener('add', e => {
 			e.stopPropagation();
 
-			const editor = (<NodeEditorAddedEvent>e).editor;
+			const editor = (<NodeEditorAddEvent>e).editor;
 			if (editor.name) {
 				const existing = I.editors.get(editor.name);
 				if (existing && existing !== editor) {
@@ -1607,10 +1607,10 @@ class NodeMapElement extends HTMLElement {
 			}
 		});
 
-		this.addEventListener('removed', e => {
+		this.addEventListener('remove', e => {
 			e.stopPropagation();
 
-			const editor = (<NodeEditorRemovedEvent>e).editor;
+			const editor = (<NodeEditorRemoveEvent>e).editor;
 			if (editor.name) {
 				const existing = I.editors.get(editor.name);
 				if (existing && existing === editor) {
@@ -1718,11 +1718,11 @@ export {
 	NodePortColorEvent,
 	NodePortOnlineEvent,
 	NodePortOfflineEvent,
-	NodeEditorAddedEvent,
-	NodeEditorRemovedEvent,
+	NodeEditorAddEvent,
+	NodeEditorRemoveEvent,
 	NodeNameEvent,
 	NodeLinkEvent,
 	NodeUnlinkEvent,
-	NodeConnectedEvent,
-	NodeDisconnectedEvent
+	NodeConnectEvent,
+	NodeDisconnectEvent
 };
