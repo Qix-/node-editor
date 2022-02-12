@@ -167,6 +167,9 @@ events will stop bubbling once they hit their respective `<node-map>` element.
 -   `disconnect` (`NodeDisconnectEvent`) - a `<node-link>` lost its connection
     -   `event.target` - the `<node-map>` (`NodeMapElement`) element from which the link was removed
     -   `event.link` - the `<node-link>` (`NodeLinkElement`) that was removed
+    -   **NOTE:** `event.link`'s attributes will always reflect the updated values, and do not
+        track the old attribute values in _any_ case. It is up to the application developer to
+        keep track of old link values if they need them.
 -   `name` (`NodeNameEvent`) - a `<node-editor>` or `<node-port>` changed its `name` attribute
     -   `event.target` - the `<node-editor>` (`NodeEditorElement`) **or** `<node-port>` (`NodePortElement`)
     -   `event.name` - the new name, or `null` if the name attribute was removed

@@ -1021,29 +1021,26 @@ class NodeLinkElement extends HTMLElement {
 		let newToPort: NodePortElement | null;
 
 		try {
+			this[notifyConnection](false, I.fromPort, I.toPort);
+
 			I.rootElem.remove();
 			I.refreshAbort?.abort();
 
 			const map = I.map;
-			if (!map || forceDisconnect)
-				return void this[notifyConnection](false, I.fromPort, I.toPort);
+			if (!map || forceDisconnect) return;
 
 			const { toName, fromName, inName, outName } = this;
-			if (!(toName && fromName && inName && outName))
-				return void this[notifyConnection](false, I.fromPort, I.toPort);
+			if (!(toName && fromName && inName && outName)) return;
 
 			const fromEditor = map.getEditor(fromName);
 			const toEditor = map.getEditor(toName);
 
-			if (!fromEditor || !toEditor)
-				return void this[notifyConnection](false, I.fromPort, I.toPort);
+			if (!fromEditor || !toEditor) return;
 
 			newFromPort = fromEditor.getPort(outName);
 			newToPort = toEditor.getPort(inName);
 
-			if (!newFromPort || !newToPort) {
-				return void this[notifyConnection](false, I.fromPort, I.toPort);
-			}
+			if (!newFromPort || !newToPort) return;
 		} finally {
 			I.fromPort = null;
 			I.toPort = null;
