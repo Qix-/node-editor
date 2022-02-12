@@ -1002,7 +1002,7 @@ class NodeLinkElement extends HTMLElement {
 		} else {
 			const ev = new NodeDisconnectEvent(this, true);
 			this.dispatchEvent(ev);
-			if (!ev.cancelBubble) {
+			if (!this.parentNode && !ev.cancelBubble) {
 				I.map?.dispatchEvent(ev);
 			}
 			if (fromPort)
