@@ -1068,7 +1068,16 @@ class NodeLinkElement extends HTMLElement {
 		newFromPort.addEventListener('offline', () => this.remove(), {
 			signal: I.refreshAbort.signal
 		});
+
 		newToPort.addEventListener('offline', () => this.remove(), {
+			signal: I.refreshAbort.signal
+		});
+
+		newFromPort.addEventListener('color', () => this[refreshColor](), {
+			signal: I.refreshAbort.signal
+		});
+
+		newToPort.addEventListener('color', () => this[refreshColor](), {
 			signal: I.refreshAbort.signal
 		});
 
