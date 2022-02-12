@@ -1151,7 +1151,9 @@ class NodeLinkElement extends HTMLElement {
 
 	disconnectedCallback() {
 		const I = this[internal];
-		this.dispatchEvent(new NodeUnlinkEvent(this));
+		const ev = new NodeUnlinkEvent(this);
+		this.dispatchEvent(ev);
+		if (ev.bubbles && !ev.cancelBubble) I.map?.dispatchEvent(ev);
 		this[refreshConnection](true);
 		delete I.map;
 	}

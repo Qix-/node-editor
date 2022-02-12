@@ -263,7 +263,11 @@
 				disconnected: e =>
 					`from=<strong>${e.link.fromName}</strong> out=<strong>${e.link.outName}</strong> to=<strong>${e.link.toName}</strong> in=<strong>${e.link.inName}</strong>`,
 				name: e =>
-					`name=<strong>${e.name}</strong> oldName=<strong>${e.oldName}</strong>`
+					`name=<strong>${e.name}</strong> oldName=<strong>${e.oldName}</strong>`,
+				link: e =>
+					`from=<strong>${e.link.fromName}</strong> out=<strong>${e.link.outName}</strong> to=<strong>${e.link.toName}</strong> in=<strong>${e.link.inName}</strong>`,
+				unlink: e =>
+					`from=<strong>${e.link.fromName}</strong> out=<strong>${e.link.outName}</strong> to=<strong>${e.link.toName}</strong> in=<strong>${e.link.inName}</strong>`
 			};
 
 			let lastType = null;
