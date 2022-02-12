@@ -161,6 +161,11 @@ events will stop bubbling once they hit their respective `<node-map>` element.
 -   `unlink` (`NodeUnlinkEvent`) - a `<node-link>` was removed from the map
     -   `event.target` - the `<node-map>` (`NodeMapElement`) element from which the link was removed
     -   `event.link` - the `<node-link>` (`NodeLinkElement`) that was removed
+    -   **NOTE:** In the event of an attribute change, an `unlink` event will immediately be followed
+        by a `link` event. In such a case, the `unlink` event's `event.link`'s attributes
+        will always reflect the updated values, and do not track the old attribute values
+        in _any_ case. It is up to the application developer to keep track of old link
+        values if they need them.
 -   `connect` (`NodeConnectEvent`) - a `<node-link>` successfully formed a connection between two ports
     -   `event.target` - the `<node-link>` (`NodeLinkElement`) element
     -   `event.link` - same as `event.target`

@@ -342,7 +342,6 @@ class NodePortElement extends HTMLElement {
 		editor?: NodeEditorElement;
 		defaultPortMarker: HTMLSpanElement;
 		editorResizeAbort?: AbortController;
-		oldName: string | null;
 		handlePosition: [number, number];
 		connections: Set<NodeLinkElement>;
 	};
@@ -371,7 +370,6 @@ class NodePortElement extends HTMLElement {
 			handleSlot: attr(HTML('slot'), {
 				name: 'handle'
 			}),
-			oldName: null,
 			handlePosition: [0, 0],
 			connections: new Set()
 		});
@@ -474,7 +472,11 @@ class NodePortElement extends HTMLElement {
 		return this[internal].handlePosition[1];
 	}
 
-	attributeChangedCallback(name: string) {
+	attributeChangedCallback(
+		name: string,
+		oldValue: string | null,
+		newValue: string | null
+	) {
 		switch (name) {
 			case 'out':
 				this[refreshPosition]();
@@ -483,11 +485,9 @@ class NodePortElement extends HTMLElement {
 				this[refreshColor]();
 				break;
 			case 'name': {
-				const I = this[internal];
-				this.dispatchEvent(
-					new NodeNameEvent(this.getAttribute('name'), I.oldName)
-				);
-				I.oldName = this.name;
+				if (oldValue !== newValue) {
+					this.dispatchEvent(new NodeNameEvent(newValue, oldValue));
+				}
 				break;
 			}
 		}
@@ -647,7 +647,6 @@ class NodeEditorElement extends HTMLElement {
 		root: HTMLDivElement;
 		map?: NodeMapElement;
 		resizeObserver: ResizeObserver;
-		oldName: string | null;
 		ports: Map<string, NodePortElement>;
 	};
 
@@ -671,7 +670,6 @@ class NodeEditorElement extends HTMLElement {
 			resizeObserver: createDebouncedResizeObserver(() =>
 				this[updateTransform](true, false)
 			),
-			oldName: null,
 			ports: new Map()
 		});
 
@@ -821,7 +819,11 @@ class NodeEditorElement extends HTMLElement {
 		else this.setAttribute('height', v.toString());
 	}
 
-	attributeChangedCallback(name: string) {
+	attributeChangedCallback(
+		name: string,
+		oldValue: string | null,
+		newValue: string | null
+	) {
 		switch (name) {
 			case 'x':
 			case 'y':
@@ -831,12 +833,11 @@ class NodeEditorElement extends HTMLElement {
 			case 'height':
 				this[updateTransform](true, false);
 				break;
-			case 'name': {
-				const I = this[internal];
-				this.dispatchEvent(new NodeNameEvent(this.name, I.oldName));
-				I.oldName = this.name;
+			case 'name':
+				if (newValue !== oldValue) {
+					this.dispatchEvent(new NodeNameEvent(newValue, oldValue));
+				}
 				break;
-			}
 		}
 	}
 
@@ -1017,6 +1018,8 @@ class NodeLinkElement extends HTMLElement {
 	private [refreshConnection](forceDisconnect: boolean = false) {
 		const I = this[internal];
 
+		let newFromEditor: NodeEditorElement | null;
+		let newToEditor: NodeEditorElement | null;
 		let newFromPort: NodePortElement | null;
 		let newToPort: NodePortElement | null;
 
@@ -1032,13 +1035,13 @@ class NodeLinkElement extends HTMLElement {
 			const { toName, fromName, inName, outName } = this;
 			if (!(toName && fromName && inName && outName)) return;
 
-			const fromEditor = map.getEditor(fromName);
-			const toEditor = map.getEditor(toName);
+			newFromEditor = map.getEditor(fromName);
+			newToEditor = map.getEditor(toName);
 
-			if (!fromEditor || !toEditor) return;
+			if (!newFromEditor || !newToEditor) return;
 
-			newFromPort = fromEditor.getPort(outName);
-			newToPort = toEditor.getPort(inName);
+			newFromPort = newFromEditor.getPort(outName);
+			newToPort = newToEditor.getPort(inName);
 
 			if (!newFromPort || !newToPort) return;
 		} finally {
@@ -1077,6 +1080,38 @@ class NodeLinkElement extends HTMLElement {
 		newToPort.addEventListener('color', () => this[refreshColor](), {
 			signal: I.refreshAbort.signal
 		});
+
+		newFromPort.addEventListener(
+			'name',
+			() => this[refreshConnection](true),
+			{
+				signal: I.refreshAbort.signal
+			}
+		);
+
+		newToPort.addEventListener(
+			'name',
+			() => this[refreshConnection](true),
+			{
+				signal: I.refreshAbort.signal
+			}
+		);
+
+		newFromEditor.addEventListener(
+			'name',
+			() => this[refreshConnection](true),
+			{
+				signal: I.refreshAbort.signal
+			}
+		);
+
+		newToEditor.addEventListener(
+			'name',
+			() => this[refreshConnection](true),
+			{
+				signal: I.refreshAbort.signal
+			}
+		);
 
 		I.fromPort = newFromPort;
 		I.toPort = newToPort;
@@ -1145,6 +1180,8 @@ class NodeLinkElement extends HTMLElement {
 	}
 
 	attributeChangedCallback() {
+		this.dispatchEvent(new NodeUnlinkEvent(this));
+		this.dispatchEvent(new NodeLinkEvent(this));
 		this[refreshConnection]();
 	}
 
