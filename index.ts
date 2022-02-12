@@ -1505,6 +1505,7 @@ class NodeMapElement extends HTMLElement {
 							if (e.pointerId !== pointerId) return;
 							this.releasePointerCapture(e.pointerId);
 							dragAbort.abort();
+
 							if (
 								lastTargetPort &&
 								!I.connections.get(port)?.has(lastTargetPort) &&
@@ -1513,12 +1514,22 @@ class NodeMapElement extends HTMLElement {
 								port.name &&
 								lastTargetPort.name
 							) {
+								const a = [port.nodeEditor.name, port.name];
+								const b = [
+									lastTargetPort.nodeEditor.name,
+									lastTargetPort.name
+								];
+
+								const forward =
+									port.isOutputPort &&
+									!lastTargetPort.isOutputPort;
+
 								this.appendChild(
 									attr(HTML('node-link'), {
-										from: port.nodeEditor.name,
-										to: lastTargetPort.nodeEditor.name,
-										out: port.name,
-										in: lastTargetPort.name
+										from: forward ? a[0] : b[0],
+										to: forward ? b[0] : a[0],
+										out: forward ? a[1] : b[1],
+										in: forward ? b[1] : a[1]
 									})
 								);
 							}
