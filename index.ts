@@ -1208,6 +1208,8 @@ class NodeCanvas extends EventTarget {
 			this.setPan(newX, newY);
 		};
 
+		this.elem.addEventListener('mousedown', e => e.preventDefault());
+
 		this.elem.addEventListener('pointerdown', e => {
 			if (dragging) return;
 			if (e.which !== 1 && e.which !== 2) return;
