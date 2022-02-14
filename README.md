@@ -83,21 +83,13 @@ A very basic overview of the components that are exposed:
 		</node-port>
 	</node-editor>
 
+	<!-- in/out ports must be children of their respective editors -->
 	<node-link
 		from="src-editor-name"
 		to="dest-editor-name"
 		out="src-port-name"
-		<!--
-		must
-		be
-		a
-		child
-		of
-		that
-		editor
-		--
+		in="dest-port-name"
 	>
-		in="dest-port-name" >
 		<!--
 			You MUST have a closing tag, but nothing
 			here will actually display. For now, please
