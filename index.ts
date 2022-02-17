@@ -910,11 +910,11 @@ class NodeLinkElement extends HTMLElement {
 				d: 'M0,0'
 			}),
 			fromColorElem: attr(SVG('stop'), {
-				offset: '0%',
+				offset: '25%',
 				'stop-color': DEFAULT_PORT_COLOR
 			}),
 			toColorElem: attr(SVG('stop'), {
-				offset: '100%',
+				offset: '75%',
 				'stop-color': DEFAULT_PORT_COLOR
 			}),
 			fromPort: null,
