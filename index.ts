@@ -6,7 +6,8 @@ const GRID_RESOLUTION = 32;
 const GRID_DOT_RADIUS = 1.5;
 const PATH_WIDTH = 5;
 const PATH_TENSION = 0.5;
-const MIN_PATH_TENSION = 50;
+const MIN_PATH_TENSION = 50.0;
+const MAX_INVERTED_PATH_TENSION = 300;
 const DEFAULT_PORT_RADIUS = 7;
 const DEFAULT_PORT_COLOR = '#555';
 
@@ -67,7 +68,13 @@ function setLinkCurve(
 	y2 = roundTo(y2, 0.1);
 
 	const hDist = x2 - x1;
-	const t = roundTo(Math.max(MIN_PATH_TENSION, hDist * PATH_TENSION), 0.1);
+	const t = roundTo(
+		Math.max(
+			MIN_PATH_TENSION,
+			Math.abs(Math.max(-MAX_INVERTED_PATH_TENSION, hDist * PATH_TENSION))
+		),
+		0.1
+	);
 
 	elem.setAttribute(
 		'd',
