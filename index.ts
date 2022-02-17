@@ -597,7 +597,7 @@ class NodeTitleElement extends HTMLElement {
 
 		this.addEventListener('pointerdown', e => {
 			if (dragId !== null) return;
-			if (e.which !== 1) return;
+			if (e.button !== 0) return;
 
 			const editor = this[internal].editor;
 			if (!editor) return;
@@ -1255,7 +1255,7 @@ class NodeCanvas extends EventTarget {
 
 		this.elem.addEventListener('pointerdown', e => {
 			if (dragging) return;
-			if (e.which !== 1 && e.which !== 2) return;
+			if (e.button !== 0 && e.button !== 1) return;
 
 			if (
 				e.target !== this.elem &&
@@ -1472,7 +1472,7 @@ class NodeMapElement extends HTMLElement {
 			port.addEventListener(
 				'pointerdown',
 				e => {
-					if (e.which !== 1) return;
+					if (e.button !== 0) return;
 
 					const pointerId = e.pointerId;
 					this.setPointerCapture(e.pointerId);
