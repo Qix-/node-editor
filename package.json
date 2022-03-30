@@ -2,7 +2,6 @@
 	"name": "node-editor",
 	"version": "0.2.2",
 	"description": "Generic node editor web components",
-	"main": "index.js",
 	"homepage": "https://github.com/qix-/node-editor",
 	"repository": "github:qix-/node-editor",
 	"type": "module",
@@ -24,8 +23,8 @@
 		"README.md",
 		"LICENSE"
 	],
-	"browser": "dist/index.js",
-	"exports": "dist/index.js",
+	"browser": "./dist/index.js",
+	"exports": "./dist/index.js",
 	"keywords": [
 		"node",
 		"editor",
