@@ -1,6 +1,6 @@
 {
 	"name": "node-editor",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Generic node editor web components",
 	"homepage": "https://github.com/qix-/node-editor",
 	"repository": "github:qix-/node-editor",
